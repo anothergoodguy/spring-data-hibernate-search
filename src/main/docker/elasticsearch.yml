@@ -1,0 +1,36 @@
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+version: '3.3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
+    volumes:
+      - ~/volumes/jhipster/shopApp/elasticsearch/:/usr/share/elasticsearch/data/
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 9200:9200
+      - 9300:9300
+    restart: always
+    environment:
+      - 'xpack.security.enabled=false'
+      - 'discovery.type=single-node'
+      - 'bootstrap.memory_lock=true'
+      - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
+      - 'network.host=0.0.0.0'
+
+    networks:
+      - esnet
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.4
+    environment:
+      - 'ELASTICSEARCH_HOSTS=http://elasticsearch:9200'
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    depends_on:
+      - elasticsearch
+    ports:
+      - '5601:5601'
+    networks:
+      - esnet
+networks:
+  esnet:
+
