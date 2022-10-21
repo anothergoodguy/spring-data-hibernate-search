@@ -213,7 +213,7 @@ public class AddressResource {
      * @param pageable the pagination information.
      * @return the result of the search.
      */
-    @GetMapping("/_search/address")
+    @GetMapping("/_search/addresses")
     public ResponseEntity<List<AddressDTO>> searchAddresses(
         @RequestParam String query,
         @org.springdoc.api.annotations.ParameterObject Pageable pageable
@@ -232,7 +232,7 @@ public class AddressResource {
      * @param pageable the pagination information.
      * @return the result of the search.
      */
-    @GetMapping("/_search/address/projection")
+    @GetMapping("/_search/addresses/projection")
     public ResponseEntity<List<AddressDTO>> searchWithProjection(
         @RequestParam String query,
         @org.springdoc.api.annotations.ParameterObject Pageable pageable

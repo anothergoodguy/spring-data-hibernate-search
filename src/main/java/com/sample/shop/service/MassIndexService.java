@@ -13,10 +13,9 @@
 
 package com.sample.shop.service;
 
-import org.springframework.scheduling.annotation.Async;
-
 import java.util.List;
 import java.util.UUID;
+import org.springframework.scheduling.annotation.Async;
 
 public interface MassIndexService {
     @Async

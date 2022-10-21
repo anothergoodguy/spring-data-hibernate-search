@@ -1,12 +1,18 @@
 package com.sample.shop.service;
 
+import static org.elasticsearch.index.query.QueryBuilders.*;
+
 import com.sample.shop.domain.Address;
 import com.sample.shop.repository.AddressRepository;
 import com.sample.shop.repository.search.AddressSearchRepository;
 import com.sample.shop.service.dto.AddressDTO;
 import com.sample.shop.service.mapper.AddressMapper;
 import com.sample.shop.service.projections.mapper.AddressProjectionMapper;
-
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.slf4j.Logger;
@@ -16,13 +22,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
 
 /**
  * Service Implementation for managing {@link Address}.
@@ -46,7 +45,8 @@ public class AddressService {
     public AddressService(
         AddressRepository addressRepository,
         AddressMapper addressMapper,
-        AddressProjectionMapper addressProjectionMapper, AddressSearchRepository addressSearchRepository,
+        AddressProjectionMapper addressProjectionMapper,
+        AddressSearchRepository addressSearchRepository,
         EntityManager entityManager
     ) {
         this.addressRepository = addressRepository;
@@ -158,31 +158,39 @@ public class AddressService {
     public Page<AddressDTO> search(String query, Pageable pageable) {
         log.debug("Request to search for a page of Addresses for query {}", query);
 
-        List addresses = searchSession.search( Address.class )
-            .where( (f, b) -> {
-                    b.must(f.matchAll());
-                }
-            ).fetchHits( 20 ).stream().map(addressMapper::toDto).collect(Collectors.toList());
-        return new PageImpl<>(addresses,pageable,addresses.size());
-
-    }    /**
+        List addresses = searchSession
+            .search(Address.class)
+            .where((f, b) -> {
+                b.must(f.matchAll());
+            })
+            .fetchHits(20)
+            .stream()
+            .map(addressMapper::toDto)
+            .collect(Collectors.toList());
+        return new PageImpl<>(addresses, pageable, addresses.size());
+    }/**
      * Search for the address corresponding to the query.
      *
      * @param query    the query of the search.
      * @param pageable the pagination information.
      * @return the list of entities.
      */
+
     @Transactional(readOnly = true)
     public Page<AddressDTO> searchWithProjection(String query, Pageable pageable) {
         log.debug("Request to search for a page of Addresses for query {}", query);
 
-        List addresses = searchSession.search( Address.class )
+        List addresses = searchSession
+            .search(Address.class)
             .select(com.sample.shop.service.projections.dto.Address.class)
-            .where( (f, b) -> {
-                    b.must(f.matchAll());
-                }
-            ).fetchHits( 20 ).stream().map(addressProjectionMapper::toDto).collect(Collectors.toList());
-        return new PageImpl<>(addresses,pageable,addresses.size());
+            .where((f, b) -> {
+                b.must(f.matchAll());
+            })
+            .fetchHits(20)
+            .stream()
+            .map(addressProjectionMapper::toDto)
+            .collect(Collectors.toList());
+        return new PageImpl<>(addresses, pageable, addresses.size());
         //return addressSearchRepository.search(query, pageable).map(addressMapper::toDto);
 
     }

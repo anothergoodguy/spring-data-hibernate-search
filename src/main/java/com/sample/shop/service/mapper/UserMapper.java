@@ -77,7 +77,7 @@ public class UserMapper {
         return authorities;
     }
 
-    public User userFromId(String id) {
+    public User userFromId(UUID id) {
         if (id == null) {
             return null;
         }

@@ -13,10 +13,15 @@
 
 package com.sample.shop.service.impl;
 
-
-
 import com.sample.shop.service.MassIndexService;
-
+import java.io.IOException;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.EntityManager;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -53,16 +58,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.persistence.EntityManager;
 
 @Service
 @Transactional
@@ -105,5 +100,4 @@ public class MassIndexServiceImpl implements MassIndexService {
                 return null;
             });
     }
-
 }

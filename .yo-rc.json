@@ -1,7 +1,7 @@
 {
   "generator-jhipster": {
     "applicationType": "monolith",
-    "authenticationType": "oauth2",
+    "authenticationType": "jwt",
     "baseName": "shopApp",
     "blueprints": [],
     "buildTool": "maven",
@@ -43,7 +43,7 @@
     "skipClient": false,
     "skipFakeData": false,
     "skipServer": false,
-    "skipUserManagement": true,
+    "skipUserManagement": false,
     "testFrameworks": [],
     "websocket": false,
     "withAdminUi": true

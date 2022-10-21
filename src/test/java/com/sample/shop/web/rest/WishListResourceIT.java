@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -111,12 +110,7 @@ class WishListResourceIT {
         // Create the WishList
         WishListDTO wishListDTO = wishListMapper.toDto(wishList);
         restWishListMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
-            )
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(wishListDTO)))
             .andExpect(status().isCreated());
 
         // Validate the WishList in the database
@@ -145,12 +139,7 @@ class WishListResourceIT {
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restWishListMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
-            )
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(wishListDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the WishList in the database
@@ -172,12 +161,7 @@ class WishListResourceIT {
         WishListDTO wishListDTO = wishListMapper.toDto(wishList);
 
         restWishListMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
-            )
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(wishListDTO)))
             .andExpect(status().isBadRequest());
 
         List<WishList> wishListList = wishListRepository.findAll();
@@ -446,7 +430,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, wishListDTO.getId())
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
             )
@@ -484,7 +467,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, wishListDTO.getId())
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
             )
@@ -511,7 +493,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
-                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
             )
@@ -536,12 +517,7 @@ class WishListResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restWishListMockMvc
-            .perform(
-                put(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
-            )
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(wishListDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the WishList in the database
@@ -568,7 +544,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedWishList.getId())
-                    .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(partialUpdatedWishList))
             )
@@ -599,7 +574,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedWishList.getId())
-                    .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(partialUpdatedWishList))
             )
@@ -627,7 +601,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, wishListDTO.getId())
-                    .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
             )
@@ -654,7 +627,6 @@ class WishListResourceIT {
         restWishListMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
-                    .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
             )
@@ -680,10 +652,7 @@ class WishListResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restWishListMockMvc
             .perform(
-                patch(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(wishListDTO))
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(wishListDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -708,7 +677,7 @@ class WishListResourceIT {
 
         // Delete the wishList
         restWishListMockMvc
-            .perform(delete(ENTITY_API_URL_ID, wishList.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, wishList.getId().toString()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -6,6 +6,7 @@ import com.sample.shop.domain.User;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.*;
 
@@ -16,7 +17,7 @@ public class AdminUserDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private UUID id;
 
     @NotBlank
     @Pattern(regexp = Constants.LOGIN_REGEX)
@@ -71,11 +72,11 @@ public class AdminUserDTO implements Serializable {
         this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

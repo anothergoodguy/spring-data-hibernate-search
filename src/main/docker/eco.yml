@@ -4,7 +4,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     volumes:
-      - ./docker-volumes/:/usr/share/elasticsearch/data/
+      - ./docker-volumes/es/:/usr/share/elasticsearch/data/
     # If you want to expose these ports outside your dev PC,
     # remove the "127.0.0.1:" prefix
     ports:
@@ -32,27 +32,42 @@ services:
     networks:
       - esnet
 
+  #  keycloak:
+  #    image: quay.io/keycloak/keycloak:19.0.1
+  #    command: ['start-dev --import-realm']
+  #    volumes:
+  #      - ./realm-config:/opt/keycloak/data/import
+  #    environment:
+  #      - KC_DB=dev-file
+  #      - KEYCLOAK_ADMIN=admin
+  #      - KEYCLOAK_ADMIN_PASSWORD=admin
+  #      - KC_FEATURES=scripts
+  #      - KC_HTTP_PORT=9080
+  #      - KC_HTTPS_PORT=9443
+  #    # If you want to expose these ports outside your dev PC,
+  #    # remove the "" prefix
+  #    ports:
+  #      - 9080:9080
+  #      - 9443:9443
+  #    networks:
+  #      - esnet
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:19.0.1
-    command: ['start-dev --import-realm']
+  shopapp-mysql:
+    image: mysql:8.0.30
+
     volumes:
-      - ./realm-config:/opt/keycloak/data/import
+      - ./config/mysql:/etc/mysql/conf.d
+      - ./docker-volumes/mysql/:/var/lib/mysql/
     environment:
-      - KC_DB=dev-file
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_FEATURES=scripts
-      - KC_HTTP_PORT=9080
-      - KC_HTTPS_PORT=9443
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=shopapp
     # If you want to expose these ports outside your dev PC,
-    # remove the "" prefix
+    # remove the "127.0.0.1:" prefix
     ports:
-      - 9080:9080
-      - 9443:9443
+      - 3306:3306
+    command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
     networks:
       - esnet
 
 networks:
   esnet:
-

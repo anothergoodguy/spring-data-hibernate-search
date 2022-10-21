@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.sample.shop.IntegrationTest;
-import com.sample.shop.config.TestSecurityConfiguration;
 import com.sample.shop.domain.User;
 import com.sample.shop.repository.UserRepository;
 import com.sample.shop.repository.search.UserSearchRepository;
@@ -91,5 +90,19 @@ class PublicUserResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").value(hasItems(AuthoritiesConstants.USER, AuthoritiesConstants.ADMIN)));
+    }
+
+    @Test
+    @Transactional
+    void getAllUsersSortedByParameters() throws Exception {
+        // Initialize the database
+        userRepository.saveAndFlush(user);
+
+        restUserMockMvc.perform(get("/api/users?sort=resetKey,desc").accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        restUserMockMvc.perform(get("/api/users?sort=password,desc").accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        restUserMockMvc
+            .perform(get("/api/users?sort=resetKey,desc&sort=id,desc").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+        restUserMockMvc.perform(get("/api/users?sort=id,desc").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 }

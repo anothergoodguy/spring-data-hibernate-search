@@ -3,9 +3,11 @@ package com.sample.shop.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sample.shop.config.Constants;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -17,8 +19,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import org.hibernate.search.engine.backend.types.ObjectStructure;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -27,23 +27,25 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 /**
  * A user.
  */
 @Entity
 @Table(name = "tm_user")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Indexed(index = "user")
+//@Indexed(index = "user")
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "user-read", createIndex = false)
 //@Audited
-public class User extends AbstractAuditingEntity<String> implements Serializable {
+public class User extends AbstractAuditingEntity<UUID> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @org.springframework.data.elasticsearch.annotations.Field(type = FieldType.Keyword)
     @KeywordField
-    private String id;
+    private UUID id;
 
     @NotNull
     @Pattern(regexp = Constants.LOGIN_REGEX)
@@ -51,6 +53,12 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     @Column(length = 50, unique = true, nullable = false)
     @FullTextField(analyzer = "autocomplete_indexing", searchAnalyzer = "autocomplete_search")
     private String login;
+
+    @JsonIgnore
+    @NotNull
+    @Size(min = 60, max = 60)
+    @Column(name = "password_hash", length = 60, nullable = false)
+    private String password;
 
     @Size(max = 50)
     @Column(name = "first_name", length = 50)
@@ -83,6 +91,19 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     @FullTextField(analyzer = "autocomplete_indexing", searchAnalyzer = "autocomplete_search")
     private String imageUrl;
 
+    @Size(max = 20)
+    @Column(name = "activation_key", length = 20)
+    @JsonIgnore
+    private String activationKey;
+
+    @Size(max = 20)
+    @Column(name = "reset_key", length = 20)
+    @JsonIgnore
+    private String resetKey;
+
+    @Column(name = "reset_date")
+    private Instant resetDate = null;
+
     @JsonIgnore
     @IndexedEmbedded(includeDepth = 1, structure = ObjectStructure.NESTED)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -97,11 +118,12 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     @BatchSize(size = 20)
     private Set<Authority> authorities = new HashSet<>();
 
-    public String getId() {
+    @Override
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -112,6 +134,14 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     // Lowercase the login before saving it in database
     public void setLogin(String login) {
         this.login = StringUtils.lowerCase(login, Locale.ENGLISH);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -152,6 +182,30 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
 
     public void setActivated(boolean activated) {
         this.activated = activated;
+    }
+
+    public String getActivationKey() {
+        return activationKey;
+    }
+
+    public void setActivationKey(String activationKey) {
+        this.activationKey = activationKey;
+    }
+
+    public String getResetKey() {
+        return resetKey;
+    }
+
+    public void setResetKey(String resetKey) {
+        this.resetKey = resetKey;
+    }
+
+    public Instant getResetDate() {
+        return resetDate;
+    }
+
+    public void setResetDate(Instant resetDate) {
+        this.resetDate = resetDate;
     }
 
     public String getLangKey() {
@@ -198,6 +252,7 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
             ", imageUrl='" + imageUrl + '\'' +
             ", activated='" + activated + '\'' +
             ", langKey='" + langKey + '\'' +
+            ", activationKey='" + activationKey + '\'' +
             "}";
     }
 }
