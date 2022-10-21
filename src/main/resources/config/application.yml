@@ -130,6 +130,7 @@ spring:
       hibernate.cache.infinispan.entity.expiration.lifespan: 3600000
       hibernate.cache.infinispan.entity.memory.size: 1000
       hibernate.cache.infinispan.jgroups_cfg: default-configs/default-jgroups-tcp.xml
+      hibernate.search.mapping.configurer: bean:searchMappingConfigurer
     hibernate:
       ddl-auto: none
       naming:
